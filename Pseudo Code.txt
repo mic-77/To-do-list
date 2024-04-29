@@ -1,0 +1,36 @@
+1. Using Factories/Classes to generate a todo list
+2. Separate Function with DOM-related stuff
+
+
+//  Task data
+1. Task
+2. title
+3. description
+4. dueDate
+5. priority
+
+
+// Project & Task Structure
+All Task (defalut)   
+  1. todos
+  2. todos 
+
+Project 2
+  1. todos
+  2. todos 
+
+
+
+// Function
+ Create New Project
+ Create new Task
+ Setting Task as complete, 
+ Changing Task priority 
+ Re-assign Task to Project
+
+// DOM & UI
+  View all projects.
+  View all todos in each project (probably just the title and duedate… perhaps changing color for different priorities).
+  Expand a single todo to see/edit its details.
+  Delete a todo.
+

@@ -1,0 +1,25 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-task-container {
+  width: 80vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.active-list {
+  color: blue;
+  font-weight: bold;
+}
+
+.task-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 50px;
+}
