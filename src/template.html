@@ -82,8 +82,17 @@
     <template id="task-template">
       <div class="task">
         <div class="task-display-up">
-          <input type="checkbox" />
-          <label><span class="custom-checkbox"></span> </label>
+          <input type="checkbox"  data-checkbox/>
+          <label>
+            <input 
+            type="text" 
+            class="task-title"
+            data-task-title
+            value=""
+            readonly
+            ></input> 
+          </label>
+          <button class="btn edit" data-edit-button>Edit</button>
         </div>
         <div class="task-display-middle">
           <p class="task-priority" data-task-priority></p>

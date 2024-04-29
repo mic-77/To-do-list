@@ -52,9 +52,9 @@ defaultProject.addEventListener("click", (e) => {
   const isProjectItem = target.matches("li");
   if (isProjectItem) {
     selectedProjectId = target.dataset.projectId;
-    console.log(selectedProjectId);
+    // console.log(selectedProjectId);
   }
-  render();
+  saveAndRender();
 });
 
 newProjectForm.addEventListener("submit", (e) => {
@@ -84,11 +84,24 @@ newTaskForm.addEventListener("submit", (e) => {
 });
 
 taskContainer.addEventListener("click", (e) => {
-  if (e.target.tagName.toLowerCase() === "input") {
+  let selectedTask = "";
+  if (selectedProjectId === "default" && e.target.type === "checkbox") {
+    for (const project of projects) {
+      selectedTask = project.tasks.find((task) => task.id === e.target.id);
+      if (selectedTask) break;
+    }
+    selectedTask.complete = e.target.checked;
+    save();
+    renderTaskCount("All");
+    return;
+  }
+
+  if (e.target.type === "checkbox") {
     const selectedProject = projects.find(
       (project) => project.id === selectedProjectId
     );
-    const selectedTask = selectedProject.tasks.find(
+
+    selectedTask = selectedProject.tasks.find(
       (task) => task.id === e.target.id
     );
     selectedTask.complete = e.target.checked;
@@ -140,23 +153,31 @@ const render = () => {
 
   renderProject();
 
-  const selectedProject = projects.find(
-    (project) => project.id === selectedProjectId
-  );
+  const selectedProject =
+    projects.find((project) => project.id === selectedProjectId) || projects;
+
   if (selectedProjectId == null) {
     taskDisplayContainer.style.display = "none";
   } else if (selectedProjectId === "default") {
     taskDisplayContainer.style.display = "";
     taskTitleElement.innerText = "ALL TASKS";
-    selectedProject === "All";
-    //20240430 Stopped here, need to figure out  task count
+    renderTaskCount(selectedProject);
+    clearElement(taskContainer);
+    renderAllTasks();
   } else {
     taskDisplayContainer.style.display = "";
     taskTitleElement.innerText = selectedProject.name.toUpperCase();
     renderTaskCount(selectedProject);
     clearElement(taskContainer);
     renderTasks(selectedProject);
+    // console.log(selectedProject);
   }
+};
+
+const renderAllTasks = () => {
+  projects.forEach((project) => {
+    renderTasks(project);
+  });
 };
 
 const renderTasks = (selectedProject) => {
@@ -166,13 +187,15 @@ const renderTasks = (selectedProject) => {
     checkbox.id = task.id;
     checkbox.checked = task.complete;
     const label = taskElement.querySelector("label");
+    const taskTitle = taskElement.querySelector("[data-task-title]");
     const descriptionArea = taskElement.querySelector(
       "[data-task-description]"
     );
     const due = taskElement.querySelector("[data-task-due-date]");
     const priority = taskElement.querySelector("[data-task-priority]");
+    const editBtn = taskElement.querySelector("[data-edit-button]");
     label.htmlFor = task.id;
-    label.append(task.name);
+    taskTitle.value = task.name;
     due.append(task.dueDate);
     priority.append(task.priority);
     !task.description
@@ -185,12 +208,19 @@ const renderTasks = (selectedProject) => {
 const renderTaskCount = (selectedProject) => {
   // Come up with a function that can count all tasks that are not completed.
   // Maybe using reduce
-
-  const incompleteTaskCount = selectedProject.tasks.filter(
-    (task) => !task.complete
-  ).length;
-  const tasksString = incompleteTaskCount <= 1 ? "task" : "tasks";
-  taskCountElement.innerText = `${incompleteTaskCount} ${tasksString} remaining`;
+  if (selectedProjectId === "default") {
+    const allIncompleteTaskCount = projects
+      .flatMap((project) => project.tasks)
+      .filter((task) => !task.complete).length;
+    const allTasksString = allIncompleteTaskCount <= 1 ? "task" : "tasks";
+    taskCountElement.innerText = `${allIncompleteTaskCount} ${allTasksString} remaining`;
+  } else {
+    const incompleteTaskCount = selectedProject.tasks.filter(
+      (task) => !task.complete
+    ).length;
+    const tasksString = incompleteTaskCount <= 1 ? "task" : "tasks";
+    taskCountElement.innerText = `${incompleteTaskCount} ${tasksString} remaining`;
+  }
 };
 
 const renderProject = () => {
@@ -205,13 +235,6 @@ const renderProject = () => {
     projectContainer.appendChild(projectElement);
   });
 };
-
-// const renderAllProjects = () => {
-//   const allTasks = [];
-//   projects.forEach((project) => {
-//     allTasks.push(...project.tasks);
-//   });
-// };
 
 const clearElement = (element) => {
   while (element.firstChild) {

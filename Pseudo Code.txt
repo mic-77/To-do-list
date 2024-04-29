@@ -22,9 +22,9 @@ Project 2
 
 
 // Function
- Create New Project
- Create new Task
- Setting Task as complete, 
+ Create New Project - Done
+ Create new Task - Done
+ Setting Task as complete  - Done
  Changing Task priority 
  Re-assign Task to Project
 

@@ -53,3 +53,7 @@ body {
   flex-direction: row;
   gap: 20px;
 }
+
+.project-list {
+  cursor: pointer;
+}
