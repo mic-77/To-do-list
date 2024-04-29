@@ -149,6 +149,7 @@ const render = () => {
     taskDisplayContainer.style.display = "";
     taskTitleElement.innerText = "ALL TASKS";
     selectedProject === "All";
+    //20240430 Stopped here, need to figure out  task count
   } else {
     taskDisplayContainer.style.display = "";
     taskTitleElement.innerText = selectedProject.name.toUpperCase();
