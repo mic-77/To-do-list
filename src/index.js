@@ -1,4 +1,5 @@
 import "./styles.css";
+import { format, addDays } from "date-fns";
 
 // DOM Manipulation
 const projectContainer = document.querySelector("[data-projects]");
@@ -16,6 +17,7 @@ const taskTitleElement = document.querySelector("[data-task-title]");
 const taskCountElement = document.querySelector("[data-task-count]");
 const taskContainer = document.querySelector("[data-tasks");
 const taskTemplate = document.getElementById("task-template");
+const newTaskFormElement = document.querySelector("[data-new-task-creator]");
 const newTaskForm = document.querySelector("[data-new-task-form]");
 const newTaskInput = document.querySelector("[data-new-task-input]");
 const newTaskDue = document.querySelector("[data-new-task-input-date]");
@@ -43,6 +45,7 @@ projectContainer.addEventListener("click", (e) => {
   const isProjectItem = target.matches("li");
   if (isProjectItem) {
     selectedProjectId = target.dataset.projectId;
+    newTaskFormElement.style.display = "";
   }
   saveAndRender();
 });
@@ -52,6 +55,7 @@ defaultProject.addEventListener("click", (e) => {
   const isProjectItem = target.matches("li");
   if (isProjectItem) {
     selectedProjectId = target.dataset.projectId;
+    newTaskFormElement.style.display = "none";
     // console.log(selectedProjectId);
   }
   saveAndRender();
@@ -70,7 +74,7 @@ newProjectForm.addEventListener("submit", (e) => {
 newTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const taskName = newTaskInput.value;
-  const taskDue = newTaskDue.value;
+  const taskDue = format(newTaskDue.value, "MM/dd/yyyy");
   const taskPrioriry = newTaskPriority.value;
   const taskDescription = newTaskDescription.value;
   if (taskName == null || taskName === "") return;
@@ -117,13 +121,21 @@ removeProjectButton.addEventListener("click", (e) => {
 });
 
 clearCompleteTaskButton.addEventListener("click", (e) => {
-  const selectedProject = projects.find(
-    (project) => project.id === selectedProjectId
-  );
-  selectedProject.tasks = selectedProject.tasks.filter(
-    (task) => !task.complete
-  );
-  saveAndRender();
+  console.log(selectedProjectId);
+  if (selectedProjectId === "default") {
+    projects.forEach((project) => {
+      project.tasks = project.tasks.filter((task) => !task.complete);
+    });
+    saveAndRender();
+  } else {
+    const selectedProject = projects.find(
+      (project) => project.id === selectedProjectId
+    );
+    selectedProject.tasks = selectedProject.tasks.filter(
+      (task) => !task.complete
+    );
+    saveAndRender();
+  }
 });
 
 // Creating new task
@@ -202,6 +214,26 @@ const renderTasks = (selectedProject) => {
       ? (descriptionArea.style.display = "none")
       : descriptionArea.append(task.description);
     taskContainer.appendChild(taskElement);
+
+    editBtn.addEventListener("click", () => {
+      if (editBtn.innerText.toLowerCase() === "edit") {
+        taskTitle.removeAttribute("readonly");
+        taskTitle.focus();
+        editBtn.innerText = "Save";
+      } else {
+        const taskID = taskTitle.closest("label")?.getAttribute("for");
+        for (const project of projects) {
+          const task = project.tasks.find((task) => task.id === taskID);
+          if (task) {
+            task.name = taskTitle.value;
+          }
+          console.log(projects);
+        }
+        taskTitle.setAttribute("readonly", "readonly");
+        editBtn.innerText = "Edit";
+        save();
+      }
+    });
   });
 };
 
