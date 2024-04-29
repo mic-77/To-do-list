@@ -23,3 +23,33 @@ body {
   align-items: center;
   gap: 50px;
 }
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+}
+.task {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+}
+.form-container-up {
+  display: flex;
+  flex-direction: column;
+}
+.form-container-down {
+  display: flex;
+  flex-direction: row;
+}
+.task-due-date,
+.task-priority,
+.task-description {
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.task-display-middle {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}

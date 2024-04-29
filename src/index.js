@@ -18,9 +18,18 @@ const taskContainer = document.querySelector("[data-tasks");
 const taskTemplate = document.getElementById("task-template");
 const newTaskForm = document.querySelector("[data-new-task-form]");
 const newTaskInput = document.querySelector("[data-new-task-input]");
+const newTaskDue = document.querySelector("[data-new-task-input-date]");
+const newTaskDescription = document.querySelector(
+  "[data-new-task-input-description]"
+);
+const newTaskPriority = document.querySelector(
+  "[data-new-task-input-priority]"
+);
 const clearCompleteTaskButton = document.querySelector(
   "[data-clear-complete-task-button]"
 );
+
+const defaultProject = document.querySelector("[data-project-default]");
 
 // Function
 let projects =
@@ -32,11 +41,20 @@ let selectedProjectId = localStorage.getItem(
 projectContainer.addEventListener("click", (e) => {
   const { target } = e;
   const isProjectItem = target.matches("li");
-
   if (isProjectItem) {
     selectedProjectId = target.dataset.projectId;
   }
   saveAndRender();
+});
+
+defaultProject.addEventListener("click", (e) => {
+  const { target } = e;
+  const isProjectItem = target.matches("li");
+  if (isProjectItem) {
+    selectedProjectId = target.dataset.projectId;
+    console.log(selectedProjectId);
+  }
+  render();
 });
 
 newProjectForm.addEventListener("submit", (e) => {
@@ -52,8 +70,11 @@ newProjectForm.addEventListener("submit", (e) => {
 newTaskForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const taskName = newTaskInput.value;
+  const taskDue = newTaskDue.value;
+  const taskPrioriry = newTaskPriority.value;
+  const taskDescription = newTaskDescription.value;
   if (taskName == null || taskName === "") return;
-  const task = createTask(taskName);
+  const task = createTask(taskName, taskDue, taskPrioriry, taskDescription);
   newTaskInput.value = null;
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
@@ -93,11 +114,14 @@ clearCompleteTaskButton.addEventListener("click", (e) => {
 });
 
 // Creating new task
-const createTask = (name) => {
+const createTask = (name, due, priority, description) => {
   return {
     id: Date.now().toString(),
     name: name,
     complete: false,
+    dueDate: due,
+    priority: priority,
+    description: description,
   };
 };
 
@@ -113,6 +137,7 @@ const createProject = (name) => {
 // Adding new project to the UI and clearing the previous one
 const render = () => {
   clearElement(projectContainer);
+
   renderProject();
 
   const selectedProject = projects.find(
@@ -120,6 +145,10 @@ const render = () => {
   );
   if (selectedProjectId == null) {
     taskDisplayContainer.style.display = "none";
+  } else if (selectedProjectId === "default") {
+    taskDisplayContainer.style.display = "";
+    taskTitleElement.innerText = "ALL TASKS";
+    selectedProject === "All";
   } else {
     taskDisplayContainer.style.display = "";
     taskTitleElement.innerText = selectedProject.name.toUpperCase();
@@ -136,13 +165,26 @@ const renderTasks = (selectedProject) => {
     checkbox.id = task.id;
     checkbox.checked = task.complete;
     const label = taskElement.querySelector("label");
+    const descriptionArea = taskElement.querySelector(
+      "[data-task-description]"
+    );
+    const due = taskElement.querySelector("[data-task-due-date]");
+    const priority = taskElement.querySelector("[data-task-priority]");
     label.htmlFor = task.id;
     label.append(task.name);
+    due.append(task.dueDate);
+    priority.append(task.priority);
+    !task.description
+      ? (descriptionArea.style.display = "none")
+      : descriptionArea.append(task.description);
     taskContainer.appendChild(taskElement);
   });
 };
 
 const renderTaskCount = (selectedProject) => {
+  // Come up with a function that can count all tasks that are not completed.
+  // Maybe using reduce
+
   const incompleteTaskCount = selectedProject.tasks.filter(
     (task) => !task.complete
   ).length;
@@ -162,6 +204,13 @@ const renderProject = () => {
     projectContainer.appendChild(projectElement);
   });
 };
+
+// const renderAllProjects = () => {
+//   const allTasks = [];
+//   projects.forEach((project) => {
+//     allTasks.push(...project.tasks);
+//   });
+// };
 
 const clearElement = (element) => {
   while (element.firstChild) {
